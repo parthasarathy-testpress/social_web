@@ -1,8 +1,0 @@
-migrations/
-*.py
-*.pyc
-*.sqlite3
-__pycache_/
-staticfiles/
-node_modules/
-_
