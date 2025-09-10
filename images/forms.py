@@ -29,7 +29,8 @@ class ImageCreateForm(forms.ModelForm):
         name = slugify(image.title)
         extension = image_url.rsplit(".", 1)[1].lower()
         image_name = f"{name}.{extension}"
-        response = request.urlopen(image_url)
+        req = request.Request(image_url, headers={"User-Agent": "Mozilla/5.0"})
+        response = request.urlopen(req)
         image.image.save(image_name, ContentFile(response.read()), save=False)
         if commit:
             image.save()
