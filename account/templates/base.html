@@ -26,7 +26,7 @@
       <span class="user">
         {% if request.user.is_authenticated %}
           Hello {{ request.user.first_name }},
-          <a href="{% url "logout" %}"> Logout</a>
+          <a href="{% url 'logout' %}" id="logout-link">Logout</a>
         {% else %}
           <a href="{% url "login" %}">Log-in</a>
         {% endif %}
@@ -79,5 +79,23 @@
           {% endblock %}
       });
     </script>
+    <script>
+       document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();  // Prevent default GET request
+
+            fetch("{% url 'logout' %}", {
+              method: "POST",
+                  headers: {
+                       "X-CSRFToken": "{{ csrf_token }}",
+                       "Content-Type": "application/x-www-form-urlencoded"
+                },
+              body: ""
+                  }).then(response => {
+                     if (response.ok) {
+                          window.location.href = "/"; // redirect after logout
+                          }
+             });
+            });
+      </script>
   </body>
 </html>
