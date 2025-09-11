@@ -15,7 +15,7 @@
             <a href="{% url "dashboard" %}">My dashboard</a>
           </li>
           <li {% if section == "images" %}class="selected"{% endif %}>
-            <a href="#">Images</a>
+            <a href="{% url "images:list" %}">Images</a>
           </li>
           <li {% if section == "people" %}class="selected"{% endif %}>
             <a href="#">People</a>
@@ -28,26 +28,56 @@
           Hello {{ request.user.first_name }},
           <a href="{% url "logout" %}"> Logout</a>
         {% else %}
-          <a href="{% url "login" %}"> Log-in</a>
+          <a href="{% url "login" %}">Log-in</a>
         {% endif %}
       </span>
       
     </div>
 
     {% if messages %}
-     <ul class="messages">
-         {% for message in messages %}
-             <li class="{{ message.tags }}">
-                {{ message|safe }}
-                <a href="#" class="close">x</a>
-             </li>
-          {% endfor %}
-     </ul>
-    {% endif %}.
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">
+            {{ message|safe }}
+            <a href="#" class="close">x</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
     
-    <div id="content">{% block content %} {% endblock %}</div>
-    <div id="myblock">
-      {% block myblock %} {% comment %} myblock {% endcomment %} {% endblock %}
+    <div id="content">
+      {% block content %}{% endblock %}
     </div>
+
+    <div id="myblock">
+      {% block myblock %}{% comment %} myblock {% endcomment %}{% endblock %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
+    <script>
+      // Get CSRF token from cookies
+      var csrftoken = Cookies.get('csrftoken');
+
+      // Function to check if a method is CSRF safe
+      function csrfSafeMethod(method) {
+          // These HTTP methods do not require CSRF protection
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+
+      // Setup AJAX to include CSRF token in unsafe requests
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+          }
+      });
+
+      $(document).ready(function() {
+          {% block domready %}
+          {% endblock %}
+      });
+    </script>
   </body>
 </html>
